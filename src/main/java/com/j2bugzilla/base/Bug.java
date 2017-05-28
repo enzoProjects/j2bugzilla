@@ -59,7 +59,7 @@ public class Bug {
 		checkRequiredFields(state);
 		internalState = state;
 	}
-	
+
 	/**
 	 * Internal method for determining whether a given <code>HashMap</code> is a valid
 	 * representation of a {@link Bug} or not.
@@ -82,7 +82,7 @@ public class Bug {
 	public String getPriority() {
 		return (String)internalState.get("priority");
 	}
-	
+
 	/**
 	 * Returns How severe the bug is, or whether it's an enhancement. Since this field can be edited between installations, you may wish to
 	 * {@link com.j2bugzilla.rpc.GetLegalValues check its legal values}.
@@ -91,16 +91,16 @@ public class Bug {
 	public String getSeverity() {
 		return (String)internalState.get("severity");
 	}
-	
+
 	/**
-	 * Returns the internal Bugzilla ID number for this bug. If it is not in the 
+	 * Returns the internal Bugzilla ID number for this bug. If it is not in the
 	 * Bugzilla database, this will return null.
 	 * @return integer ID
 	 */
 	public int getID() {
 		return (Integer)internalState.get("id");
 	}
-	
+
 	/**
 	 * Returns the unique alias of this {@link Bug}. If none is set, this method will return null.
 	 * @return A {@code String} representing the unique alias for this bug.
@@ -108,7 +108,7 @@ public class Bug {
 	public String getAlias() {
 		return (String)internalState.get("alias");
 	}
-	
+
 	/**
 	 * Sets the alias of this {@link Bug}. By default, Bugzilla restricts aliases to be 20 characters in length.
 	 * @param alias A {@code String} representing a unique alias for this bug.
@@ -116,7 +116,7 @@ public class Bug {
 	public void setAlias(String alias) {
 		internalState.put("alias", alias);
 	}
-	
+
 	/**
 	 * Returns the one-line summary included with the original bug report.
 	 * @return A {@code String} representing the summary entered for this {@link Bug}.
@@ -124,7 +124,7 @@ public class Bug {
 	public String getSummary() {
 		return (String)internalState.get("summary");
 	}
-	
+
 	/**
 	 * Sets the one-line summary of this {@link Bug}.
 	 * @param summary A {@code String} representing the summary describing this bug.
@@ -132,7 +132,7 @@ public class Bug {
 	public void setSummary(String summary) {
 		internalState.put("summary", summary);
 	}
-	
+
 	/**
 	 * Returns the product this {@link Bug} belongs to.
 	 * @return the Product category this {@link Bug} is filed under.
@@ -140,7 +140,7 @@ public class Bug {
 	public String getProduct() {
 		return (String)internalState.get("product");
 	}
-	
+
 	/**
 	 * Sets the product this {@link Bug} is associated with. Note that a nonexistent product name will result in an
 	 * error from Bugzilla upon bug submission.
@@ -149,7 +149,7 @@ public class Bug {
 	public void setProduct(String product) {
 		internalState.put("product", product);
 	}
-	
+
 	/**
 	 * Returns the component this {@link Bug} is associated with.
 	 * @return the component of the {@link Bug}'s parent Product
@@ -157,7 +157,7 @@ public class Bug {
 	public String getComponent() {
 		return (String)internalState.get("component");
 	}
-	
+
 	/**
 	 * Sets the component this {@link Bug} is associated with. Note that a nonexistent component name will result
 	 * in Bugzilla returning an error upon submission. Since this field can be edited between installations, you may wish to
@@ -167,7 +167,7 @@ public class Bug {
 	public void setComponent(String component) {
 		internalState.put("component", component);
 	}
-	
+
 	/**
 	 * Returns the version number of the product this {@link Bug} is associated with.
 	 * @return the version associated with this {@link Bug}
@@ -175,7 +175,7 @@ public class Bug {
 	public String getVersion() {
 		return (String)internalState.get("version");
 	}
-	
+
 	/**
 	 * Sets the version number of the product this {@link Bug} is associated with. Note that a nonexistent version
 	 * number will result in Bugzilla returning an error on submission. Since this field can be edited between installations, you may wish to
@@ -185,7 +185,7 @@ public class Bug {
 	public void setVersion(String version) {
 		internalState.put("version", version);
 	}
-	
+
 	/**
 	 * Returns the status of this {@link Bug} indicating whether it is open or closed.
 	 * @return A {@code String} representing the status of a {@link Bug}.
@@ -193,11 +193,11 @@ public class Bug {
 	public String getStatus() {
 		return (String) internalState.get("status");
 	}
-	
+
 	/**
 	 * Sets the status of this {@link Bug} indicating whether it is open or closed. Since this field can be edited between installations, you may wish to
 	 * {@link com.j2bugzilla.rpc.GetLegalValues check its legal values}.
-	 * 
+	 *
 	 * If changing a bug's state from closed to open, the resolution must also be reset. Otherwise, the remote
 	 * Bugzilla installation will throw an error. Clients must manually call {@link #clearResolution()}. Since the status
 	 * and resolution fields are customizable, this library cannot safely determine when to call this method automatically,
@@ -208,7 +208,7 @@ public class Bug {
 	public void setStatus(String status) {
 		internalState.put("status", status);
 	}
-	
+
 	/**
 	 * Returns the resolution of this {@link Bug} if it is closed, or null if it is still open.
 	 * @return A {@code String} representing the resolution of a {@link Bug}.
@@ -217,11 +217,11 @@ public class Bug {
 	public String getResolution() {
 		return (String) internalState.get("resolution");
 	}
-	
+
 	/**
 	 * Sets the resolution of this {@link Bug}. Since this field can be edited between installations, you may wish to
 	 * {@link com.j2bugzilla.rpc.GetLegalValues check its legal values}.
-	 * 
+	 *
 	 * If the status does not correspond to a closed value, this value is meaningless.
 	 * Bugzilla allows the definition of custom workflows, so maintaining a correct correspondence between resolution and status is the
 	 * responsibility of the caller.
@@ -231,7 +231,7 @@ public class Bug {
 	public void setResolution(String resolution) {
 		internalState.put("resolution", resolution);
 	}
-	
+
 	/**
 	 * Removes any existing resolution for this {@link Bug}.
 	 * Since a resolution can only be applied to a closed bug, depending on the workflow defined by the particular
@@ -242,15 +242,15 @@ public class Bug {
 	public void clearResolution() {
 		internalState.remove("resolution");
 	}
-	
+
 	/**
-	 * Returns the operating system this bug was discovered to affect. 
+	 * Returns the operating system this bug was discovered to affect.
 	 * @return A {@code String} representing the name of the affected operating system.
 	 */
 	public String getOperatingSystem() {
 		return (String) internalState.get("op_sys");
 	}
-	
+
 	/**
 	 * Sets the operating system this {@link Bug} was discovered to affect. Since this field can be edited between installations, you may wish to
 	 * {@link com.j2bugzilla.rpc.GetLegalValues check its legal values}.
@@ -259,7 +259,7 @@ public class Bug {
 	public void setOperatingSystem(String os) {
 		internalState.put("op_sys", os);
 	}
-	
+
 	/**
 	 * Returns the hardware platform this bug was discovered to affect. Since this field can be edited between installations, you may wish to
 	 * {@link com.j2bugzilla.rpc.GetLegalValues check its legal values}.
@@ -268,7 +268,7 @@ public class Bug {
 	public String getPlatform() {
 		return (String) internalState.get("platform");
 	}
-	
+
 	/**
 	 * Sets the platform affected by this {@link Bug}. Since this field can be edited between installations, you may wish to
 	 * {@link com.j2bugzilla.rpc.GetLegalValues check its legal values}.
@@ -277,7 +277,7 @@ public class Bug {
 	public void setPlatform(String platform) {
 		internalState.put("platform", platform);
 	}
-	
+
 	/**
 	 * Returns the {@code Set} of all {@link Flag Flags} recorded for this {@link Bug}.
 	 * @return A collection of {@code Flags} recorded by the Bugzilla installation against this {@code Bug}.

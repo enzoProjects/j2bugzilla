@@ -12,8 +12,6 @@ public interface BugzillaHttpParser {
 
     String getEndOfParse();
 
-    void getPropertiesForParse();
-
     Object getResults();
 
     Map<Object, Object> getParameters();

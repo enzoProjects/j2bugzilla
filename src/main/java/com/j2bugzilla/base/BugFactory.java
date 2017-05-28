@@ -53,6 +53,13 @@ public class BugFactory {
 		
 		return new Bug(copyProps);
 	}
+
+	public HttpBug createHttpBug(Map<String, Object> properties) {
+		Map<String, Object> copyProps = new HashMap<String, Object>();
+		copyProps.putAll(properties);
+
+		return new HttpBug(copyProps);
+	}
 	
 	/**
 	 * Sets up this {@link BugFactory} to produce a new {@link Bug}.

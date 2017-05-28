@@ -89,7 +89,6 @@ public class BugzillaConnector {
     public void connectTo(final String host, final String httpUser, final String httpPasswd) throws ConnectionException {
 
         String newHost = host;
-        this.user = httpUser;
         this.host = newHost;
         if (!newHost.endsWith("xmlrpc.cgi")) {
             if (newHost.endsWith("/")) {
@@ -241,6 +240,8 @@ public class BugzillaConnector {
             method.setResultMap(readOnlyResults);
             if (method instanceof LogIn) {
                 LogIn login = (LogIn) method;
+                String email = (String) method.getParameterMap().get("login");
+                this.user = email.split("@")[0];
                 setToken(login.getToken());
             }
         } catch (XmlRpcException e) {

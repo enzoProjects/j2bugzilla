@@ -1,11 +1,15 @@
 package com.j2bugzilla.http;
 
+import com.j2bugzilla.base.Bug;
+import com.j2bugzilla.base.BugFactory;
 import com.j2bugzilla.base.BugzillaHttpParser;
-import com.j2bugzilla.rpc.BugSearch;
+import com.j2bugzilla.base.HttpBug;
+import org.apache.commons.lang3.text.WordUtils;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by springfield-home on 5/28/17.
@@ -14,6 +18,12 @@ public class BugSearchParser implements BugzillaHttpParser {
     public static final String START = "buglistSorter";
     public static final String END = "</table>";
     public static final String PATH = "buglist.cgi";
+    public static final char[] MINUS = new char[]{'_'};
+    public static final String UNDERSCORE = "_";
+    public static final String JOIN_ESPACE = "";
+    public static final int OFFSET_BZ = 3;
+    public static final int OFFSET_COLUMN = 7;
+    public final List<HttpBug> listaBugs = new LinkedList();
 
     private final Map<Object, Object> params = new HashMap<Object, Object>();
 
@@ -32,9 +42,7 @@ public class BugSearchParser implements BugzillaHttpParser {
         FIX_BY("fix_by"),
         BRANCH("cf_branch"),
         VISS("cf_viss"),
-        SUMMARY("short_desc")
-
-        ;
+        SUMMARY("short_desc");
 
         private final String name;
 
@@ -117,7 +125,7 @@ public class BugSearchParser implements BugzillaHttpParser {
     }
 
     public BugSearchParser(SearchQuery... queries) {
-        params.put(SearchLimiter.QUERY_FORMAT.getName(),"advanced");
+        params.put(SearchLimiter.QUERY_FORMAT.getName(), "advanced");
         if (queries.length == 0) {
             throw new IllegalArgumentException("At least one search query is required");
         }
@@ -127,14 +135,15 @@ public class BugSearchParser implements BugzillaHttpParser {
         }
     }
 
-    public void setSearchColumns(BugSearchParser.SearchColumn ... columns) {
+    public void setSearchColumns(BugSearchParser.SearchColumn... columns) {
         if (columns.length == 0) {
             throw new IllegalArgumentException("At least one search column is required");
         }
         StringBuilder sb = new StringBuilder();
-        for (BugSearchParser.SearchColumn column : columns) {
-            sb.append(column.getName());
+        for (int i = 0; i < columns.length - 1; i++) {
+            sb.append(columns[i].getName() + ",");
         }
+        sb.append(columns[columns.length - 1].getName());
         params.put(SearchLimiter.BUG_PROPERTIES.getName(), sb.toString());
     }
 
@@ -148,12 +157,6 @@ public class BugSearchParser implements BugzillaHttpParser {
         return END;
     }
 
-    @Override
-    public void getPropertiesForParse() {
-
-    }
-
-
     public Map<Object, Object> getParameters() {
         return params;
     }
@@ -165,23 +168,43 @@ public class BugSearchParser implements BugzillaHttpParser {
 
     @Override
     public void parse(Document doc) {
+        Elements columns = doc.select("col");
+        String[] columnsName = new String[columns.size()];
+        for (int i = 0; i < columns.size(); i++) {
+            String columnText = columns.get(i).className();
+            columnText = columnText.substring(OFFSET_BZ, columnText.length() - OFFSET_COLUMN);
+            columnsName[i] = WordUtils.capitalizeFully(columnText, MINUS).replaceAll(UNDERSCORE, JOIN_ESPACE);
+        }
+        Elements bugs = doc.select("tr");
+        for (int i = 1; i < bugs.size(); i++) {
+            Map<String, Object> bugMap = new LinkedHashMap();
+            Elements rows = bugs.get(i).select("td");
+            for (int j = 0; j < columns.size(); j++) {
+                Element row = rows.get(j);
+                if (row.children().size() > 0 && row.child(0).is("span")) {
+                    bugMap.put(columnsName[j], row.child(0).attr("title"));
+                } else {
+                    bugMap.put(columnsName[j], row.text());
+                }
 
+            }
+            listaBugs.add(new BugFactory().createHttpBug(bugMap));
+        }
     }
 
     @Override
-    public Object getResults() {
-        return null;
+    public List<HttpBug> getResults() {
+        return listaBugs;
     }
-
 
 
     /**
      * The {@code SearchQuery} class encapsulates a query against the bug collection on a given
      * Bugzilla database. It consists of a limiter to apply and the value for that limiter. For
      * example, a valid {@code SearchQuery} might consist of the limiter
-     * {@link BugSearch.SearchLimiter#PRODUCT "Product"} and the query {@code "J2Bugzilla"}.
+     * {@link BugSearchParser.SearchLimiter# "Product"} and the query {@code "J2Bugzilla"}.
      * <p>
-     * When a {@code SearchQuery} is applied within the {@link BugSearch} class, it is joined with the
+     * When a {@code SearchQuery} is applied within the {@link BugSearchParser} class, it is joined with the
      * other queries in a logical AND. That is, bugs will be returned that match all the criteria, not
      * any of them.
      *
