@@ -17,6 +17,7 @@ package com.j2bugzilla.base;
 
 
 import com.j2bugzilla.rpc.LogIn;
+import com.j2bugzilla.rpc.LogOut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
@@ -58,6 +59,7 @@ public class BugzillaConnector {
     private String token;
     private String host;
     private String user;
+    private boolean connected;
 
     /**
      * Use this method to designate a host to connect to. You must call this method
@@ -243,12 +245,19 @@ public class BugzillaConnector {
                 String email = (String) method.getParameterMap().get("login");
                 this.user = email.split("@")[0];
                 setToken(login.getToken());
+                this.connected = true;
+            }
+
+            if (method instanceof LogOut) {
+                this.connected = false;
             }
         } catch (XmlRpcException e) {
             BugzillaException wrapperException = XmlExceptionHandler.handleFault(e);
             throw wrapperException;
         }
     }
+
+    public boolean getConnectionStatus() { return connected;}
 
     public void setToken(String t) {
         token = t;
